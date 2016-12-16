@@ -1,7 +1,7 @@
 require 'pathname'
 require 'json'
 if Puppet::Util::Platform.windows?
-  require_relative '../../../puppet_x/puppetlabs/powershell_manager'
+  require_relative '../../../puppet_x/puppetlabs/dsc/powershell_manager'
 end
 
 Puppet::Type.type(:base_dsc).provide(:powershell) do
@@ -55,8 +55,8 @@ Puppet (including 3.x), or to a Puppet version newer than 3.x.
   end
 
   def self.powershell_args
-    ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass', '-Command']
-    ps_args << '-' if !Facter.value(:uses_win32console)
+    ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass']
+    #ps_args << '-' if !Facter.value(:uses_win32console)
     ps_args
   end
 
@@ -69,34 +69,34 @@ Puppet (including 3.x), or to a Puppet version newer than 3.x.
   def exists?
     version = Facter.value(:powershell_version)
     uses_win32console = Facter.value(:uses_win32console)
-    Puppet.debug "PowerShell Version: #{version}"
+    Puppet.debug "dsc: PowerShell Version: #{version}"
     script_content = ps_script_content('test')
-    Puppet.debug "\n" + script_content
+    Puppet.debug "dsc: \n" + script_content
     if uses_win32console
       output = powershell(self.class.powershell_args, script_content)
     else
       output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
     end
-    Puppet.debug "Dsc Resource returned: #{output}"
+    Puppet.debug "dsc: Dsc Resource returned: #{output}"
     data = JSON.parse(output)
     fail(data['errormessage']) if !data['errormessage'].empty?
     exists = data['indesiredstate']
-    Puppet.debug "Dsc Resource Exists?: #{exists}"
-    Puppet.debug "dsc_ensure: #{resource[:dsc_ensure]}" if resource.parameters.has_key?(:dsc_ensure)
-    Puppet.debug "ensure: #{resource[:ensure]}"
+    Puppet.debug "dsc: Dsc Resource Exists?: #{exists}"
+    Puppet.debug "dsc: dsc_ensure: #{resource[:dsc_ensure]}" if resource.parameters.has_key?(:dsc_ensure)
+    Puppet.debug "dsc: ensure: #{resource[:ensure]}"
     exists
   end
 
   def create
     uses_win32console = Facter.value(:uses_win32console)
     script_content = ps_script_content('set')
-    Puppet.debug "\n" + script_content
+    Puppet.debug "dsc: \n" + script_content
     if uses_win32console
       output = powershell(self.class.powershell_args, script_content)
     else
       output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
     end
-    Puppet.debug "Create Dsc Resource returned: #{output}"
+    Puppet.debug "dsc: Create Dsc Resource returned: #{output}"
     data = JSON.parse(output)
 
     fail(data['errormessage']) if !data['errormessage'].empty?
@@ -109,13 +109,13 @@ Puppet (including 3.x), or to a Puppet version newer than 3.x.
   def destroy
     uses_win32console = Facter.value(:uses_win32console)
     script_content = ps_script_content('set')
-    Puppet.debug "\n" + script_content
+    Puppet.debug "dsc: \n" + script_content
     if uses_win32console
       output = powershell(self.class.powershell_args, script_content)
     else
       output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
     end
-    Puppet.debug "Destroy Dsc Resource returned: #{output}"
+    Puppet.debug "dsc: Destroy Dsc Resource returned: #{output}"
     data = JSON.parse(output)
 
     fail(data['errormessage']) if !data['errormessage'].empty?

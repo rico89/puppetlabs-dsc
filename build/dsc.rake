@@ -154,7 +154,7 @@ eod
         FileUtils.cd(dsc_resource_path) do
           # --date-order probably doesn't matter
           # Requires git version 2.2.0 or higher - https://github.com/git/git/commit/9271095cc5571e306d709ebf8eb7f0a388254d9d
-          tags_raw = %x{ git log --tags --pretty=format:'%D' --simplify-by-decoration --date-order }
+          tags_raw = %x{ git log --tags --pretty=format:'%d' --simplify-by-decoration --date-order }
           # If the conversion of string to version starts to result in errors,
           # we should explore pushing this out out to a method where we can
           # clean up the tags that may have prerelease versions in them

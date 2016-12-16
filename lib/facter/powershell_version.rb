@@ -1,5 +1,5 @@
 require 'pathname'
-require Pathname.new(__FILE__).dirname + '../' + 'puppet_x/puppetlabs/powershell_version'
+require Pathname.new(__FILE__).dirname + '../' + 'puppet_x/puppetlabs/dsc/powershell_version'
 
 Facter.add(:powershell_version) do
   setcode do
